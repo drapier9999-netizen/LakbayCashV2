@@ -6,6 +6,7 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/header.php';
 
 if (session_status() === PHP_SESSION_NONE) {
   session_set_cookie_params([
