@@ -48,6 +48,20 @@ function generate_credit_limit() {
   return random_int(LOAN_MIN_LIMIT, LOAN_MAX_LIMIT);
 }
 
+function is_valid_facebook_url($url) {
+  if ($url === '') return false;
+  $parsed = parse_url($url);
+  if ($parsed === false) return false;
+  $scheme = strtolower($parsed['scheme'] ?? '');
+  if (!in_array($scheme, ['http', 'https'], true)) return false;
+  $host = strtolower($parsed['host'] ?? '');
+  $allowed = ['facebook.com', 'www.facebook.com', 'm.facebook.com', 'fb.com'];
+  if (!in_array($host, $allowed, true)) return false;
+  $path = trim($parsed['path'] ?? '', '/');
+  if ($path === '') return false;
+  return true;
+}
+
 function calculate_loan($amount, $months, $rate = LOAN_INTEREST_RATE) {
   $interest = $amount * $rate * $months;
   $total = $amount + $interest;

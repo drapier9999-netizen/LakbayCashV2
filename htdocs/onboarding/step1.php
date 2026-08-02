@@ -36,12 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($form[$r] === '') $errors[$r] = 'This field is required.';
   }
 
-  // Dependents
-  $dep_names = $_POST['dep_name'] ?? [];
-  $dep_bd = $_POST['dep_birthday'] ?? [];
-  $dep_ph = $_POST['dep_phone'] ?? [];
-  if ($form['facebook_link'] !== '' && !filter_var($form['facebook_link'], FILTER_VALIDATE_URL)) {
-    $errors['facebook_link'] = 'Enter a valid Facebook profile link (URL).';
+  if ($form['facebook_link'] === '') {
+    $errors['facebook_link'] = 'Facebook profile link is required.';
+  } elseif (!is_valid_facebook_url($form['facebook_link'])) {
+    $errors['facebook_link'] = 'Enter a valid Facebook profile link (e.g. https://facebook.com/username).';
   }
 
   // Dependents
@@ -52,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   for ($i = 0; $i < $form['num_dependents']; $i++) {
     if (empty($dep_names[$i]) || empty($dep_bd[$i]) || empty($dep_ph[$i]) || empty($dep_fb[$i])) {
       $errors['dependents'] = 'Please complete all dependent fields.';
-    } elseif (!filter_var($dep_fb[$i], FILTER_VALIDATE_URL)) {
-      $errors['dependents'] = 'Enter a valid Facebook profile link for Dependent ' . ($i + 1) . '.';
+    } elseif (!is_valid_facebook_url($dep_fb[$i])) {
+      $errors['dependents'] = 'Dependent ' . ($i + 1) . ': Enter a valid Facebook profile link (e.g. https://facebook.com/username).';
     }
   }
 
@@ -204,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <div class="field">
         <label class="field-label">Facebook Profile Link <span class="pct">+1% Profile Completion</span></label>
-        <input type="url" name="facebook_link" class="field-input" value="<?= e($form['facebook_link'] ?? '') ?>" placeholder="https://facebook.com/yourprofile">
+        <input type="url" name="facebook_link" class="field-input" value="<?= e($form['facebook_link'] ?? '') ?>" placeholder="https://facebook.com/yourprofile" pattern="https?://(www\.|m\.)?(facebook\.com|fb\.com)/.+" required>
         <?php if (!empty($errors['facebook_link'])): ?><div class="field-error"><?= e($errors['facebook_link']) ?></div><?php endif; ?>
       </div>
 
