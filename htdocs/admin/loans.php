@@ -10,8 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $note = trim($_POST['admin_note'] ?? '');
 
   if (in_array($newStatus, ['pending', 'approved', 'rejected']) && $loanId > 0) {
-    $stmt = db()->prepare('UPDATE loans SET status = ?, admin_note = ?, evaluated_at = IFNULL(evaluated_at, NOW()) WHERE id = ?');
-    $stmt->execute([$newStatus, $note ?: null, $loanId]);
+    $stmt = db()->prepare('UPDATE loans SET status = ?, admin_note = CONCAT(IFNULL(admin_note,""), ?), evaluated_at = IFNULL(evaluated_at, NOW()) WHERE id = ?');
+    $stmt->execute([$newStatus, $note ? "\n" . $note : null, $loanId]);
   }
 }
 

@@ -42,15 +42,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors['facebook_link'] = 'Enter a valid Facebook profile link (e.g. https://facebook.com/username).';
   }
 
-  // Dependents
-  $dep_names = $_POST['dep_name'] ?? [];
-  $dep_bd = $_POST['dep_birthday'] ?? [];
-  $dep_ph = $_POST['dep_phone'] ?? [];
-  $dep_fb = $_POST['dep_facebook_link'] ?? [];
+  // Dependents — use strict string checks instead of empty() which
+  // falsely rejects '0' and doesn't catch whitespace-only values.
+  $raw = $_POST['dep_name'] ?? [];
+  $dep_names = is_array($raw) ? array_map('trim', $raw) : [];
+  $raw = $_POST['dep_birthday'] ?? [];
+  $dep_bd = is_array($raw) ? array_map('trim', $raw) : [];
+  $raw = $_POST['dep_phone'] ?? [];
+  $dep_ph = is_array($raw) ? array_map('trim', $raw) : [];
+  $raw = $_POST['dep_facebook_link'] ?? [];
+  $dep_fb = is_array($raw) ? array_map('trim', $raw) : [];
   for ($i = 0; $i < $form['num_dependents']; $i++) {
-    if (empty($dep_names[$i]) || empty($dep_bd[$i]) || empty($dep_ph[$i]) || empty($dep_fb[$i])) {
-      $errors['dependents'] = 'Please complete all dependent fields.';
-    } elseif (!is_valid_facebook_url($dep_fb[$i])) {
+    $n = $dep_names[$i] ?? '';
+    $b = $dep_bd[$i] ?? '';
+    $p = $dep_ph[$i] ?? '';
+    $f = $dep_fb[$i] ?? '';
+    if ($n === '' || $b === '' || $p === '' || $f === '') {
+      $errors['dependents'] = 'Please complete all fields for Dependent ' . ($i + 1) . '.';
+    } elseif (!is_valid_facebook_url($f)) {
       $errors['dependents'] = 'Dependent ' . ($i + 1) . ': Enter a valid Facebook profile link (e.g. https://facebook.com/username).';
     }
   }
@@ -80,6 +89,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Update onboarding step
     db()->prepare('UPDATE users SET onboarding_step = GREATEST(onboarding_step, 1) WHERE id = ?')->execute([$uid]);
     redirect('onboarding/step2.php');
+  }
+}
+
+// Prepare dependent values for pre-fill on form re-display
+$dep_values = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  for ($i = 0; $i < $form['num_dependents']; $i++) {
+    $dep_values[] = [
+      'name'          => $dep_names[$i] ?? '',
+      'birthday'      => $dep_bd[$i] ?? '',
+      'phone'         => $dep_ph[$i] ?? '',
+      'facebook_link' => $dep_fb[$i] ?? '',
+    ];
+  }
+} else {
+  $stmt = db()->prepare('SELECT dep_name, birthday, phone, facebook_link FROM dependents WHERE user_id = ? ORDER BY sort_order');
+  $stmt->execute([$uid]);
+  foreach ($stmt->fetchAll() as $row) {
+    $dep_values[] = [
+      'name'          => $row['dep_name'],
+      'birthday'      => $row['birthday'],
+      'phone'         => $row['phone'],
+      'facebook_link' => $row['facebook_link'],
+    ];
   }
 }
 ?>
@@ -117,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <p>Tell us about yourself. Each field adds to your profile completion.</p>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" novalidate>
+    <form method="POST" novalidate>
       <div class="field-grid">
         <div class="field">
           <label class="field-label">First Name <span class="pct">+1% Profile Completion</span></label>
@@ -229,9 +262,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 <script>
+var existingDeps = <?= json_encode($dep_values) ?>;
 var sel = document.getElementById('numDependents');
 var container = document.getElementById('dependentsContainer');
-function updateDeps() { renderDependents(parseInt(sel.value), container); }
+function updateDeps() { renderDependents(parseInt(sel.value), container, existingDeps); }
 sel.addEventListener('change', updateDeps);
 updateDeps();
 </script>

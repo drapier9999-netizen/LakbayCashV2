@@ -7,9 +7,13 @@ if (!isset($_SESSION['pending_user_id']) || !isset($_SESSION['pending_otp'])) {
 
 $otp_display = $_SESSION['pending_otp'];
 $pending_uid = $_SESSION['pending_user_id'];
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Verify and proceed
+  $submitted_otp = trim($_POST['otp'] ?? '');
+  if ($submitted_otp === '' || $submitted_otp !== ($_SESSION['pending_otp'] ?? '')) {
+    $errors['otp'] = 'Invalid OTP code. Please try again.';
+  } else {
   $_SESSION['user_id'] = $pending_uid;
   unset($_SESSION['pending_user_id'], $_SESSION['pending_otp'], $_SESSION['pending_mobile']);
 
@@ -25,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
   }
   redirect('dashboard.php');
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -58,6 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="text-sm text-muted text-center">Tap the code to copy it.</div>
     </div>
 
+    <?php if (!empty($errors['otp'])): ?>
+    <div class="field-error" style="text-align:center; margin-bottom:var(--space-4);"><?= e($errors['otp']) ?></div>
+    <?php endif; ?>
     <form method="POST" id="otpForm">
       <div class="otp-inputs" id="otpInputs">
         <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autofocus>

@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <div class="field">
         <label class="field-label">Bank Statement <span class="pct">+1% Profile Completion</span></label>
-        <div class="upload-box" <?= $files['bank_statement'] ? 'class="has-file"' : '' ?>>
+        <div class="upload-box<?= $files['bank_statement'] ? ' has-file' : '' ?>">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <div class="upload-label"><?= $files['bank_statement'] ? 'Uploaded ✓' : 'Tap to upload' ?></div>
           <div class="upload-sub">PDF, JPG, PNG (max 10MB)</div>

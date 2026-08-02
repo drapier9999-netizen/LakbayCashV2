@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $calc = calculate_loan($amount, $months);
-$sliderPct = (($amount - LOAN_MIN_LIMIT) / ($creditLimit - LOAN_MIN_LIMIT)) * 100;
+$sliderPct = ($creditLimit > LOAN_MIN_LIMIT) ? (($amount - LOAN_MIN_LIMIT) / ($creditLimit - LOAN_MIN_LIMIT)) * 100 : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">

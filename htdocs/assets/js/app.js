@@ -102,19 +102,24 @@ function toggleAdminSidebar() {
 }
 
 // ── Dynamic dependents ───────────────────────────────────────
-function renderDependents(count, container) {
+function renderDependents(count, container, existing) {
+  existing = existing || [];
   container.innerHTML = '';
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
   for (var i = 1; i <= count; i++) {
+    var v = existing[i - 1] || {};
     var html = '<div class="card mb-4" style="border-color:var(--primary-200)">' +
       '<h4 style="font-size:.9rem;font-weight:700;color:var(--primary-700);margin-bottom:var(--space-3)">Dependent ' + i + '</h4>' +
       '<div class="field"><label class="field-label">Name <span class="pct">+1% Profile Completion</span></label>' +
-      '<input type="text" name="dep_name[]" class="field-input" required></div>' +
+      '<input type="text" name="dep_name[]" class="field-input" value="' + esc(v.name) + '" required></div>' +
       '<div class="field"><label class="field-label">Birthday <span class="pct">+1% Profile Completion</span></label>' +
-      '<input type="date" name="dep_birthday[]" class="field-input" required></div>' +
+      '<input type="date" name="dep_birthday[]" class="field-input" value="' + esc(v.birthday) + '" required></div>' +
       '<div class="field"><label class="field-label">Phone Number <span class="pct">+1% Profile Completion</span></label>' +
-      '<input type="tel" name="dep_phone[]" class="field-input" required></div>' +
+      '<input type="tel" name="dep_phone[]" class="field-input" value="' + esc(v.phone) + '" required></div>' +
       '<div class="field"><label class="field-label">Facebook Profile Link <span class="pct">+1% Profile Completion</span></label>' +
-      '<input type="url" name="dep_facebook_link[]" class="field-input" placeholder="https://facebook.com/username" pattern="https?://(www\.|m\.)?(facebook\.com|fb\.com)/.+" required></div>' +
+      '<input type="url" name="dep_facebook_link[]" class="field-input" value="' + esc(v.facebook_link) + '" placeholder="https://facebook.com/username" pattern="https?://(www\.|m\.)?(facebook\.com|fb\.com)/.+" required></div>' +
       '</div>';
     container.insertAdjacentHTML('beforeend', html);
   }
