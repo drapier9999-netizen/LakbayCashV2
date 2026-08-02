@@ -85,7 +85,7 @@ $loans = $stmt->fetchAll();
           <div class="detail-row"><span class="lbl">Province</span><span class="val"><?= e($personal['province']) ?></span></div>
           <div class="detail-row"><span class="lbl">Region</span><span class="val"><?= e($personal['region']) ?></span></div>
           <div class="detail-row"><span class="lbl">Zip Code</span><span class="val"><?= e($personal['zip_code']) ?></span></div>
-          <div class="detail-row"><span class="lbl">Facebook</span><span class="val"><?= e($personal['facebook_name'] ?: '—') ?></span></div>
+          <div class="detail-row"><span class="lbl">Facebook</span><span class="val"><?= $personal['facebook_link'] ? '<a href="' . e($personal['facebook_link']) . '" target="_blank" rel="noopener noreferrer" style="color:var(--primary-600);">View Profile</a>' : '—' ?></span></div>
           <div class="detail-row"><span class="lbl">Dependents</span><span class="val"><?= $personal['num_dependents'] ?></span></div>
         <?php else: ?>
           <p class="text-muted text-sm">Not yet completed.</p>
@@ -100,7 +100,7 @@ $loans = $stmt->fetchAll();
           <div class="detail-row"><span class="lbl">Name</span><span class="val"><?= e($d['dep_name']) ?></span></div>
           <div class="detail-row"><span class="lbl">Birthday</span><span class="val"><?= format_date($d['birthday']) ?></span></div>
           <div class="detail-row"><span class="lbl">Phone</span><span class="val"><?= e($d['phone']) ?></span></div>
-          <div class="detail-row"><span class="lbl">Facebook</span><span class="val"><?= e($d['facebook'] ?: '—') ?></span></div>
+          <div class="detail-row"><span class="lbl">Facebook</span><span class="val"><?= $d['facebook_link'] ? '<a href="' . e($d['facebook_link']) . '" target="_blank" rel="noopener noreferrer" style="color:var(--primary-600);">View Profile</a>' : '—' ?></span></div>
           <?php if ($i < count($dependents) - 1): ?><div class="divider"></div><?php endif; ?>
           <?php endforeach; ?>
         <?php else: ?>

@@ -67,7 +67,7 @@ $contacts = $stmt->fetchAll();
       <div class="detail-row"><span class="lbl">Nationality</span><span class="val"><?= e($personal['nationality']) ?></span></div>
       <div class="detail-row"><span class="lbl">Address</span><span class="val"><?= e($personal['street'] . ', ' . $personal['city'] . ', ' . $personal['province'] . ' ' . $personal['zip_code']) ?></span></div>
       <div class="detail-row"><span class="lbl">Region</span><span class="val"><?= e($personal['region']) ?></span></div>
-      <div class="detail-row"><span class="lbl">Facebook</span><span class="val"><?= e($personal['facebook_name'] ?: '—') ?></span></div>
+      <div class="detail-row"><span class="lbl">Facebook</span><span class="val"><?= $personal['facebook_link'] ? '<a href="' . e($personal['facebook_link']) . '" target="_blank" rel="noopener noreferrer" style="color:var(--primary-600);">View Profile</a>' : '—' ?></span></div>
       <div class="detail-row"><span class="lbl">Dependents</span><span class="val"><?= $personal['num_dependents'] ?></span></div>
     </div>
     <?php endif; ?>

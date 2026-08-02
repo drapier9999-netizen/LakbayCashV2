@@ -113,8 +113,8 @@ function renderDependents(count, container) {
       '<input type="date" name="dep_birthday[]" class="field-input" required></div>' +
       '<div class="field"><label class="field-label">Phone Number <span class="pct">+1% Profile Completion</span></label>' +
       '<input type="tel" name="dep_phone[]" class="field-input" required></div>' +
-      '<div class="field"><label class="field-label">Facebook Name <span class="pct">+1% Profile Completion</span></label>' +
-      '<input type="text" name="dep_facebook[]" class="field-input" required></div>' +
+      '<div class="field"><label class="field-label">Facebook Profile Link <span class="pct">+1% Profile Completion</span></label>' +
+      '<input type="url" name="dep_facebook_link[]" class="field-input" placeholder="https://facebook.com/username" required></div>' +
       '</div>';
     container.insertAdjacentHTML('beforeend', html);
   }

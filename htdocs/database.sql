@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `personal_info` (
   `province`           VARCHAR(100) NOT NULL,
   `region`             VARCHAR(100) NOT NULL,
   `zip_code`           VARCHAR(10)  NOT NULL,
-  `facebook_name`      VARCHAR(120) DEFAULT NULL,
+  `facebook_link`      VARCHAR(255) DEFAULT NULL,
   `num_dependents`     TINYINT UNSIGNED DEFAULT 0,
   `created_at`         DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at`         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `dependents` (
   `dep_name`     VARCHAR(120) NOT NULL,
   `birthday`     DATE         NOT NULL,
   `phone`        VARCHAR(20)  NOT NULL,
-  `facebook`     VARCHAR(120) DEFAULT NULL,
+  `facebook_link`     VARCHAR(255) DEFAULT NULL,
   `sort_order`   TINYINT UNSIGNED DEFAULT 1,
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

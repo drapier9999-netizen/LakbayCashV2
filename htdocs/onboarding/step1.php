@@ -17,7 +17,7 @@ $form = [
   'first_name' => '', 'middle_name' => '', 'last_name' => '',
   'gender' => '', 'nationality' => 'Filipino', 'date_of_birth' => '',
   'complete_address' => '', 'street' => '', 'city' => '', 'province' => '',
-  'region' => '', 'zip_code' => '', 'facebook_name' => '', 'num_dependents' => 1,
+  'region' => '', 'zip_code' => '', 'facebook_link' => '', 'num_dependents' => 1,
 ];
 
 // Load existing
@@ -40,32 +40,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $dep_names = $_POST['dep_name'] ?? [];
   $dep_bd = $_POST['dep_birthday'] ?? [];
   $dep_ph = $_POST['dep_phone'] ?? [];
-  $dep_fb = $_POST['dep_facebook'] ?? [];
+  if ($form['facebook_link'] !== '' && !filter_var($form['facebook_link'], FILTER_VALIDATE_URL)) {
+    $errors['facebook_link'] = 'Enter a valid Facebook profile link (URL).';
+  }
+
+  // Dependents
+  $dep_names = $_POST['dep_name'] ?? [];
+  $dep_bd = $_POST['dep_birthday'] ?? [];
+  $dep_ph = $_POST['dep_phone'] ?? [];
+  $dep_fb = $_POST['dep_facebook_link'] ?? [];
   for ($i = 0; $i < $form['num_dependents']; $i++) {
     if (empty($dep_names[$i]) || empty($dep_bd[$i]) || empty($dep_ph[$i]) || empty($dep_fb[$i])) {
       $errors['dependents'] = 'Please complete all dependent fields.';
+    } elseif (!filter_var($dep_fb[$i], FILTER_VALIDATE_URL)) {
+      $errors['dependents'] = 'Enter a valid Facebook profile link for Dependent ' . ($i + 1) . '.';
     }
   }
 
   if (!$errors) {
     // Upsert personal_info
     $stmt = db()->prepare('INSERT INTO personal_info
-      (user_id, first_name, middle_name, last_name, gender, nationality, date_of_birth, complete_address, street, city, province, region, zip_code, facebook_name, num_dependents)
+      (user_id, first_name, middle_name, last_name, gender, nationality, date_of_birth, complete_address, street, city, province, region, zip_code, facebook_link, num_dependents)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
       ON DUPLICATE KEY UPDATE
-      first_name=VALUES(first_name), middle_name=VALUES(middle_name), last_name=VALUES(last_name), gender=VALUES(gender), nationality=VALUES(nationality), date_of_birth=VALUES(date_of_birth), complete_address=VALUES(complete_address), street=VALUES(street), city=VALUES(city), province=VALUES(province), region=VALUES(region), zip_code=VALUES(zip_code), facebook_name=VALUES(facebook_name), num_dependents=VALUES(num_dependents)');
+      first_name=VALUES(first_name), middle_name=VALUES(middle_name), last_name=VALUES(last_name), gender=VALUES(gender), nationality=VALUES(nationality), date_of_birth=VALUES(date_of_birth), complete_address=VALUES(complete_address), street=VALUES(street), city=VALUES(city), province=VALUES(province), region=VALUES(region), zip_code=VALUES(zip_code), facebook_link=VALUES(facebook_link), num_dependents=VALUES(num_dependents)');
     $stmt->execute([
       $uid, $form['first_name'], $form['middle_name'], $form['last_name'],
       $form['gender'], $form['nationality'], $form['date_of_birth'],
       $form['complete_address'], $form['street'], $form['city'], $form['province'],
-      $form['region'], $form['zip_code'], $form['facebook_name'], $form['num_dependents']
+      $form['region'], $form['zip_code'], $form['facebook_link'], $form['num_dependents']
     ]);
 
     // Delete & re-insert dependents
     $stmt = db()->prepare('DELETE FROM dependents WHERE user_id = ?');
     $stmt->execute([$uid]);
     for ($i = 0; $i < $form['num_dependents']; $i++) {
-      $stmt = db()->prepare('INSERT INTO dependents (user_id, dep_name, birthday, phone, facebook, sort_order) VALUES (?,?,?,?,?,?)');
+      $stmt = db()->prepare('INSERT INTO dependents (user_id, dep_name, birthday, phone, facebook_link, sort_order) VALUES (?,?,?,?,?,?)');
       $stmt->execute([$uid, $dep_names[$i], $dep_bd[$i], $dep_ph[$i], $dep_fb[$i], $i + 1]);
     }
 
@@ -193,8 +203,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <div class="field">
-        <label class="field-label">Facebook Name <span class="pct">+1% Profile Completion</span></label>
-        <input type="text" name="facebook_name" class="field-input" value="<?= e($form['facebook_name'] ?? '') ?>" placeholder="Your Facebook display name">
+        <label class="field-label">Facebook Profile Link <span class="pct">+1% Profile Completion</span></label>
+        <input type="url" name="facebook_link" class="field-input" value="<?= e($form['facebook_link'] ?? '') ?>" placeholder="https://facebook.com/yourprofile">
+        <?php if (!empty($errors['facebook_link'])): ?><div class="field-error"><?= e($errors['facebook_link']) ?></div><?php endif; ?>
       </div>
 
       <div class="divider"></div>
