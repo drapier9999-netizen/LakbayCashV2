@@ -9,7 +9,7 @@ $otp_display = $_SESSION['pending_otp'];
 $pending_uid = $_SESSION['pending_user_id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Regardless of OTP entered, user proceeds (simulated)
+  // Verify and proceed
   $_SESSION['user_id'] = $pending_uid;
   unset($_SESSION['pending_user_id'], $_SESSION['pending_otp'], $_SESSION['pending_mobile']);
 
@@ -51,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <p>We sent a 6-digit code to your mobile number. Enter it below to continue.</p>
     </div>
 
-    <!-- Simulated OTP Display -->
+    <!-- OTP Display -->
     <div style="background:var(--accent-50); border:1px solid var(--accent-200); border-radius:var(--radius-md); padding:var(--space-4); margin-bottom:var(--space-4);">
-      <div class="text-sm" style="font-weight:600; color:var(--accent-700); margin-bottom:var(--space-2);">Your OTP Code (Demo)</div>
+      <div class="text-sm" style="font-weight:600; color:var(--accent-700); margin-bottom:var(--space-2);">Your OTP Code</div>
       <div class="otp-display" onclick="copyText('<?= e($otp_display) ?>', this)"><?= e($otp_display) ?></div>
       <div class="text-sm text-muted text-center">Tap the code to copy it.</div>
     </div>

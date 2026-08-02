@@ -5,12 +5,12 @@ require_login();
 $uid = $_SESSION['user_id'];
 $prog = get_onboarding_progress($uid);
 
-if (!$prog['steps'][1]) redirect('onboarding/step1.php');
-if (!$prog['steps'][2]) redirect('onboarding/step2.php');
-if (!$prog['steps'][3]) redirect('onboarding/step3.php');
+// Redirect to first incomplete step (unless it's this one)
+$firstIncomplete = 0;
 for ($i = 1; $i <= 5; $i++) {
-  if (!$prog['steps'][$i] && $i !== 4) { redirect('onboarding/step' . $i . '.php'); }
+  if (!$prog['steps'][$i]) { $firstIncomplete = $i; break; }
 }
+if ($firstIncomplete && $firstIncomplete !== 4) { redirect('onboarding/step' . $firstIncomplete . '.php'); }
 
 $errors = [];
 $form = [
