@@ -1,0 +1,18 @@
+# Prevent directory listing
+Options -Indexes
+
+# Protect config file
+<Files "config.php">
+  Require all denied
+</Files>
+
+# Protect .sql files
+<FilesMatch "\.(sql)$">
+  Require all denied
+</FilesMatch>
+
+# Protect includes directory (block direct access)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^includes/ - [F,L]
+</IfModule>
